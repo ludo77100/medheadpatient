@@ -3,7 +3,6 @@ pipeline {
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials-id')
         IMAGE_NAME = 'fr0d0n/medheadoc'
-        PACKAGE_NAME = 'patientms'
     }
     stages {
         stage('Check Docker') {
@@ -31,7 +30,7 @@ pipeline {
             steps {
                 script {
                     echo "Starting Docker build..."
-                    dockerImage = docker.build("${env.PACKAGE_NAME}${env.IMAGE_NAME}:${env.BUILD_NUMBER}")
+                    dockerImage = docker.build("${env.IMAGE_NAME}:${env.BUILD_NUMBER}")
                 }
             }
         }
@@ -42,7 +41,7 @@ pipeline {
                         // Effectuer le login de manière sécurisée
                         sh 'echo $DOCKERHUB_PASSWORD | docker login -u $DOCKERHUB_USERNAME --password-stdin'
                         // Pousser l'image vers Docker Hub
-                        sh "docker push ${env.PACKAGE_NAME}${env.IMAGE_NAME}:${env.BUILD_NUMBER}"
+                        sh "docker push ${env.IMAGE_NAME}:${env.BUILD_NUMBER}"
                         //sh "docker push ${env.IMAGE_NAME}:latest"
                     }
                 }
