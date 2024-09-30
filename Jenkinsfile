@@ -16,12 +16,12 @@ pipeline {
     stage('SonarCloud Analysis') {
         steps {
             script {
-                // Exécuter l'analyse avec SonarCloud
                 sh "mvn sonar:sonar \
                     -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
                     -Dsonar.organization=ludo77100 \
                     -Dsonar.host.url=https://sonarcloud.io \
-                    -Dsonar.login=${env.SONAR_TOKEN}"
+                    -Dsonar.login=${env.SONAR_TOKEN} \
+                    -Dsonar.java.binaries=target/classes"
             }
         }
     }
