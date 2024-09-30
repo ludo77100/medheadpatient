@@ -3,8 +3,8 @@ pipeline {
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials-id')
         IMAGE_NAME = 'fr0d0n/medhead-patients'
-                SONAR_TOKEN = credentials('sonarcloud-token')
-                SONAR_PROJECT_KEY = 'ludo77100_medheadpatient'
+        SONAR_TOKEN = credentials('sonarcloud-token')
+        SONAR_PROJECT_KEY = 'ludo77100_medheadpatient'
     }
     stages {
         stage('Check Docker') {
@@ -18,6 +18,18 @@ pipeline {
                 sh 'mvn -B -DskipTests clean package'
             }
         }
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+            post {
+                always {
+                    junit '**/target/surefire-reports/*.xml'
+                    jacoco execPattern: '**/target/jacoco.exec'
+
+                }
+            }
+        }
         stage('SonarCloud Analysis') {
             steps {
                 script {
@@ -26,17 +38,8 @@ pipeline {
                         -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
                         -Dsonar.organization=ludo77100 \
                         -Dsonar.host.url=https://sonarcloud.io \
-                        -Dsonar.login=${env.SONAR_TOKEN}"
-                }
-            }
-        }
-        stage('Test') {
-            steps {
-                sh 'mvn test'
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml'
+                        -Dsonar.login=${env.SONAR_TOKEN} \
+                        -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml"
                 }
             }
         }
@@ -68,4 +71,3 @@ pipeline {
         }
     }
 }
-
