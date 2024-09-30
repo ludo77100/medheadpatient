@@ -13,21 +13,21 @@ pipeline {
                 sh 'docker images'     // Liste les images Docker existantes
             }
         }
-    stage('SonarCloud Analysis') {
-        steps {
-            script {
-                sh "mvn sonar:sonar \
-                    -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
-                    -Dsonar.organization=ludo77100 \
-                    -Dsonar.host.url=https://sonarcloud.io \
-                    -Dsonar.login=${env.SONAR_TOKEN} \
-                    -Dsonar.java.binaries=target/classes"
-            }
-        }
-    }
         stage('Build') {
             steps {
                 sh 'mvn -B -DskipTests clean package'
+            }
+        }
+        stage('SonarCloud Analysis') {
+            steps {
+                script {
+                    // Exécuter l'analyse avec SonarCloud
+                    sh "mvn sonar:sonar \
+                        -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} \
+                        -Dsonar.organization=ludo77100 \
+                        -Dsonar.host.url=https://sonarcloud.io \
+                        -Dsonar.login=${env.SONAR_TOKEN}"
+                }
             }
         }
         stage('Test') {
